@@ -1,0 +1,10 @@
+[Unit]
+Description=REST server providing information about local sensors
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/sensors/rest-server.py
+
+[Install]
+WantedBy=multi-user.target
