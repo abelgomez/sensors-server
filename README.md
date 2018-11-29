@@ -58,7 +58,8 @@ Provides the following result:
 {
   "humidity": 59.1,
   "temperature": 27.6,
-  "last_update": "2018-09-24 13:25:59.979584"
+  "last_update": "2018-09-24 13:25:59.979584",
+  "refresh_interval": 10
 }
 ```
 

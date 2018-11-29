@@ -14,11 +14,13 @@ INTERVAL = 10
 LISTEN=8080
 
 class Dht22:
-    last_update = None
-    temperature = None
-    humidity = None
 
     def __init__(self):
+        self.refresh_interval = INTERVAL
+        self.last_update = None
+        self.temperature = None
+        self.humidity = None
+
         self.__update()
         thread = Thread(target=self.__update_loop, args=(self,))
         thread.setDaemon(True)
@@ -35,7 +37,7 @@ class Dht22:
     def __update_loop(self, data):
         while True:
             data.__update()
-            time.sleep(INTERVAL)
+            time.sleep(self.refresh_interval)
 
 class dht22(tornado.web.RequestHandler):
     def get(self):
