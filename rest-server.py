@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+import os
 import tornado.ioloop
 import tornado.web
 import time
@@ -9,34 +10,49 @@ import Adafruit_DHT
 import argparse
 from threading import Thread
 
-parser = argparse.ArgumentParser(description='Shutdown button listener')
+DEFAULT_TYPE = 22
+DEFAULT_INTERVAL = 10
+DEFAULT_PORT = 8080
+
+TYPE = os.getenv('SS_TYPE', DEFAULT_TYPE)
+INTERVAL = os.getenv('SS_INTERVAL', DEFAULT_INTERVAL)
+PORT = os.getenv('SS_PORT', DEFAULT_PORT)
+LABEL = os.getenv('SS_LABEL')
+
+parser = argparse.ArgumentParser(description='REST server to publish information about local sensors.')
 parser.add_argument('-b', '--bcm',
                     required=True,
                     type=int,
-                    help='GPIO pin to liste to')
+                    help='GPIO pin to liste to.')
 parser.add_argument('-t', '--type',
-                    default=22,
+                    default=TYPE,
                     type=int,
-                    help='DHT variant (11 or 22)')
+                    help='DHT variant (11 or 22). May also be set using the SS_TYPE environment variable.')
 parser.add_argument('-i', '--interval',
-                    default=10,
+                    default=INTERVAL,
                     type=int,
-                    help='Refresh interval')
+                    help='Refresh interval. May also be set using the SS_INTERVAL environment variable.')
 parser.add_argument('-p', '--port',
-                    default=8080,
+                    default=PORT,
                     type=int,
-                    help='Port to deploy the web service')
+                    help='Port to deploy the web service. May also be set using the SS_PORT environment variable.')
+parser.add_argument('-l', '--label',
+                    default=LABEL,
+                    help='Label identifying this sensor. May also be set using the SS_LABEL environment variable.')
 
 args = parser.parse_args()
 
-GPIO_SENSOR = args.bcm
-INTERVAL = args.interval
-LISTEN = args.port
+BCM = args.bcm
 TYPE = args.type
+INTERVAL = args.interval
+PORT = args.port
+LABEL = args.label
 
 class DhtXX:
 
     def __init__(self):
+        if args.label is not None:
+            self.label = LABEL
         self.type = TYPE
         self.refresh_interval = INTERVAL
         self.last_update = None
@@ -50,7 +66,7 @@ class DhtXX:
 
     def __update(self):
         self.last_update = str(datetime.datetime.now())
-        (h, t) = Adafruit_DHT.read_retry(self.type, GPIO_SENSOR)
+        (h, t) = Adafruit_DHT.read_retry(self.type, BCM)
         if t is not None:
             self.temperature = round(t,1)
         if h is not None:
@@ -80,5 +96,5 @@ application = tornado.web.Application([
 dhtxx = DhtXX()
 
 if __name__ == "__main__":
-    application.listen(LISTEN, "0.0.0.0")
+    application.listen(PORT, "0.0.0.0")
     tornado.ioloop.IOLoop.instance().start()

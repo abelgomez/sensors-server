@@ -15,5 +15,4 @@ rm $SVC_FILE
 rm $CONF_FILE
 rm $INSTDIR/rest-server.py
 rmdir $INSTDIR
-rmdir $SVC_LOCATION
 rmdir $CONF_LOCATION

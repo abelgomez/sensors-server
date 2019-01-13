@@ -52,7 +52,7 @@ After=syslog.target network.target
 
 [Service]
 Type=simple
-ExecStart=$INSTDIR/rest-server.py --bcm \$GPIO --type \$TYPE
+ExecStart=$INSTDIR/rest-server.py --bcm \$SS_BCM
 
 [Install]
 WantedBy=multi-user.target
@@ -64,8 +64,7 @@ function create_config_file() {
   && mkdir $CONF_LOCATION \
   && cat << EOF > "$CONF_FILE"
 [Service]
-Environment="GPIO=4"
-Environment="TYPE=22"
+Environment="SS_BCM=4"
 EOF
 }
 

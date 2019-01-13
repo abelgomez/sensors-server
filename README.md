@@ -33,17 +33,23 @@ See other configurable parameters in the [Usage](#usage) section, and adapt the 
 # Usage
 
 ```
-usage: rest-server.py [-h] -b BCM [-t TYPE] [-i INTERVAL] [-p PORT]
+usage: rest-server.py [-h] -b BCM [-t TYPE] [-i INTERVAL] [-p PORT] [-l LABEL]
 
-Shutdown button listener
+REST server to publish information about local sensors.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -b BCM, --bcm BCM     GPIO pin to liste to
-  -t TYPE, --type TYPE  DHT variant (11 or 22)
+  -b BCM, --bcm BCM     GPIO pin to liste to.
+  -t TYPE, --type TYPE  DHT variant (11 or 22). May also be set using the
+                        SS_TYPE environment variable.
   -i INTERVAL, --interval INTERVAL
-                        Refresh interval
-  -p PORT, --port PORT  Port to deploy the web service
+                        Refresh interval. May also be set using the
+                        SS_INTERVAL environment variable.
+  -p PORT, --port PORT  Port to deploy the web service. May also be set using
+                        the SS_PORT environment variable.
+  -l LABEL, --label LABEL
+                        Label identifying this sensor. May also be set using
+                        the SS_LABEL environment variable.
 ```
 
 # Steps to uninstall
@@ -76,7 +82,8 @@ Provides the following result:
   "humidity": 34.0, 
   "type": 11, 
   "last_update": "2019-01-13 03:24:13.599569", 
-  "refresh_interval": 10
+  "refresh_interval": 10,
+  "label": "My Server"
 }
 ```
 
