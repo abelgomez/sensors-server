@@ -49,8 +49,8 @@ if ! check_python3; then
 fi
 
 if ! check_pip3; then
-  yn_question "pip3 is not installed! Would you like me to run 'apt-get install python-pip3'?" \
-    && apt-get install python-pip3
+  yn_question "pip3 is not installed! Would you like me to run 'apt-get install python3-pip'?" \
+    && apt-get install python3-pip
 fi
 
 if ! check_adafruit_dht; then
