@@ -65,7 +65,13 @@ fi
 
 mkdir -p $INSTDIR
 cp rest-server.py $INSTDIR
-cp sensors-server.service $SVCS_LOCATION
+
+if [ ! -f "$SVCS_LOCATION/sensors-server.service" ]; then
+  cp sensors-server.service $SVCS_LOCATION
+else
+  yn_question "Overwrite the sensors REST server systemd file?" \
+    && cp sensors-server.service $SVCS_LOCATION
+fi
 
 yn_question "Enable and (re)start the sensors REST server?" \
   && systemctl enable sensors-server && systemctl restart sensors-server

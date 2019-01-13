@@ -4,7 +4,7 @@ After=syslog.target network.target
 
 [Service]
 Type=simple
-ExecStart=/opt/sensors/rest-server.py
+ExecStart=/opt/sensors/rest-server.py --bcm 23
 
 [Install]
 WantedBy=multi-user.target

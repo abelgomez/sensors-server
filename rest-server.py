@@ -6,17 +6,38 @@ import time
 import json
 import datetime
 import Adafruit_DHT
+import argparse
 from threading import Thread
 
+parser = argparse.ArgumentParser(description='Shutdown button listener')
+parser.add_argument('-b', '--bcm',
+                    required=True,
+                    type=int,
+                    help='GPIO pin to liste to')
+parser.add_argument('-t', '--type',
+                    default=22,
+                    type=int,
+                    help='DHT variant (11 or 22)')
+parser.add_argument('-i', '--interval',
+                    default=10,
+                    type=int,
+                    help='Refresh interval')
+parser.add_argument('-p', '--port',
+                    default=8080,
+                    type=int,
+                    help='Port to deploy the web service')
 
-GPIO_SENSOR = 23
-INTERVAL = 10
-LISTEN=8080
+args = parser.parse_args()
+
+GPIO_SENSOR = args.bcm
+INTERVAL = args.interval
+LISTEN = args.port
+TYPE = args.type
 
 class DhtXX:
 
     def __init__(self):
-        self.type = Adafruit_DHT.DHT22
+        self.type = TYPE
         self.refresh_interval = INTERVAL
         self.last_update = None
         self.temperature = None
