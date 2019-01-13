@@ -1,7 +1,10 @@
 #! /usr/bin/env bash
 
-INSTDIR=/opt/sensors
-SVCS_LOCATION=/etc/systemd/system/
+INSTDIR="/opt/sensors"
+SVC_LOCATION="/etc/systemd/system"
+SVC_FILE="$SVC_LOCATION/sensors-server.service"
+CONF_LOCATION="$SVC_FILE.d"
+CONF_FILE="$CONF_LOCATION/override.conf"
 
 function print() {
   echo "$@";
@@ -41,6 +44,32 @@ function yn_question() {
   esac
 }
 
+function create_service_file() {
+  cat << EOF > "$SVC_FILE"
+[Unit]
+Description=REST server providing information about local sensors
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=$INSTDIR/rest-server.py --bcm \$GPIO --type \$TYPE
+
+[Install]
+WantedBy=multi-user.target
+EOF
+}
+
+function create_config_file() {
+  [ ! -f "$CONF_FILE" ] \
+  && mkdir $CONF_LOCATION \
+  && cat << EOF > "$CONF_FILE"
+[Service]
+Environment="GPIO=4"
+Environment="TYPE=22"
+EOF
+}
+
+
 [ "$(whoami)" != "root" ] && exec sudo -p "[sudo] This script must be executed as root. Password for %p: " -- "$0" "$@"
 
 if ! check_python3; then
@@ -66,12 +95,8 @@ fi
 mkdir -p $INSTDIR
 cp rest-server.py $INSTDIR
 
-if [ ! -f "$SVCS_LOCATION/sensors-server.service" ]; then
-  cp sensors-server.service $SVCS_LOCATION
-else
-  yn_question "Overwrite the sensors REST server systemd file?" \
-    && cp sensors-server.service $SVCS_LOCATION
-fi
+create_service_file
+create_config_file
 
 yn_question "Enable and (re)start the sensors REST server?" \
   && systemctl enable sensors-server && systemctl restart sensors-server
